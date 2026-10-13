@@ -147,21 +147,31 @@ export function mount(container: HTMLElement, pkg: WidgetPackage, opts: MountOpt
 
   // ---- DOM: container > stage (scaled) > iframe (BLEED past the box) ----
 
-  if (getComputedStyle(container).position === 'static') container.style.position = 'relative'
-  if (!container.clientHeight) container.style.aspectRatio = `${size.w} / ${size.h}`
+  // Layout is read only in the ResizeObserver callback, which runs after
+  // layout, and before anything is written there: reading it at mount would
+  // force a synchronous layout of the whole page for every preview mounted.
   const stage = document.createElement('div')
   stage.style.cssText = `position:absolute;left:0;top:0;width:${size.w}px;height:${size.h}px;transform-origin:0 0`
   container.appendChild(stage)
+  let placed = false
   const fit = () => {
     const cw = container.clientWidth
     const ch = container.clientHeight
+    if (!placed) {
+      placed = true
+      if (getComputedStyle(container).position === 'static') container.style.position = 'relative'
+      if (!ch) {
+        // The observer reports again once the ratio gives it a height.
+        container.style.aspectRatio = `${size.w} / ${size.h}`
+        return
+      }
+    }
     if (!cw || !ch) return
     const s = Math.min(cw / size.w, ch / size.h)
     stage.style.transform = `translate(${(cw - size.w * s) / 2}px,${(ch - size.h * s) / 2}px) scale(${s})`
   }
   const ro = new ResizeObserver(fit)
   ro.observe(container)
-  fit()
 
   // ---- The frame ----
 
@@ -227,8 +237,10 @@ export function mount(container: HTMLElement, pkg: WidgetPackage, opts: MountOpt
     if (a) showAlert(a)
   }
 
+  // The fonts load while the frame boots; start() waits briefly for them.
+  const fonts = opts.fontsUrl ? fetchFonts(opts.fontsUrl, [JSON.stringify(fieldsNow()), JSON.stringify(theme), code.html, code.css, code.js].join('\n')) : Promise.resolve([])
+
   async function start(): Promise<void> {
-    const fonts = opts.fontsUrl ? fetchFonts(opts.fontsUrl, [JSON.stringify(fieldsNow()), JSON.stringify(theme), code.html, code.css, code.js].join('\n')) : Promise.resolve([])
     const first = await Promise.race([fonts, new Promise<null>((r) => setTimeout(() => r(null), FONT_WAIT_MS))])
     if (dead) return
     if (mode !== 'output') alertVars = alertFor(undefined, true)?.vars ?? null
