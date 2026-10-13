@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src/protocol.ts", "src/format.ts", "src/host/index.ts", "src/api/index.ts", "src/tooling/index.ts", "src/tooling/check.ts", "src/render/themecore.ts"]
+}
