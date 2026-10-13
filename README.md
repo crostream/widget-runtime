@@ -175,6 +175,24 @@ npm test        # vitest (run the build first)
 WIDGETS=/path/to/widgets npm run dev   # dev page on 127.0.0.1:5199, /?w=<id>,<id>
 ```
 
+## Releasing
+
+Releases are published from CI with npm Trusted Publishing (OIDC), so there
+is no npm token. Provenance is attached automatically.
+
+1. `npm version X.Y.Z --no-git-tag-version`, commit the change to `main`.
+2. `git tag vX.Y.Z && git push origin vX.Y.Z`.
+
+The `Publish` workflow checks that the tag equals `v` plus the
+`package.json` version, builds, tests and publishes (`prepublishOnly`), then
+creates the GitHub Release with generated notes.
+
+One-time setup on npmjs.com (package Settings, Trusted publishing, GitHub
+Actions): organization `crostream`, repository `widget-runtime`, workflow
+filename `publish.yml`, environment left empty. Once a release has worked,
+the package can be set to "Require two-factor authentication and disallow
+tokens".
+
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
