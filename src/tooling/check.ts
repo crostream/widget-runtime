@@ -1,15 +1,11 @@
 // check.ts: checks a widget folder the way the editor and the runtime would
 // (Node only; the crostream-widget command and the tests use it).
 //
-// Two source layouts are read, told apart by the manifest's keys:
-//   csw  (crostream-gallery/widgets/<id>/): manifest.json with `csw`, `id`,
-//        `version` (semver), `api`; widget.html, widget.css, widget.js;
-//        assets/
-//   app  (the app's internal/overlay/gallery/<slug>/): manifest.json with
-//        `format`, `version` (an integer), …; the same three code files
+// The source layout is the csw one (crostream-gallery/widgets/<id>/):
+// manifest.json with `csw`, `id`, `version` (semver), `api`; widget.html,
+// widget.css, widget.js; assets/
 //
-// Every widget gets: its identity (name, icon, and for csw the id, version
-// and API level), the runtime's template compiler on widget.html, the
+// Every widget gets: its identity (name, icon, id, version and API level), the runtime's template compiler on widget.html, the
 // editor's template check, the script type-checked against WIDGET_DTS plus
 // the widget's own context, and the widget API's own script checks.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
@@ -85,8 +81,6 @@ export function problemsOf(js: string, ctx?: WidgetContext): { line: number; mes
 
 // ---- Widget folders ----
 
-export type Layout = 'csw' | 'app'
-
 interface Manifest {
   name?: string
   icon?: string
@@ -94,14 +88,6 @@ interface Manifest {
   data?: string[]
   sample?: Record<string, unknown>
   [key: string]: unknown
-}
-
-// layoutOf tells the two source layouts apart by the manifest's keys: a csw
-// folder has `csw`, an app gallery folder has `format`.
-export function layoutOf(man: Record<string, unknown>): Layout | undefined {
-  if ('csw' in man) return 'csw'
-  if ('format' in man) return 'app'
-  return undefined
 }
 
 // isWidgetFolder tells whether dir holds a widget (a manifest.json).
@@ -136,17 +122,14 @@ export function checkFolder(dir: string): FolderResult {
   } catch (e) {
     return { name: slug, problems: [`manifest.json: ${(e as Error).message}`] }
   }
-  const layout = layoutOf(man)
-  if (!layout) return { name: slug, problems: ['manifest.json has neither `csw` (a .csw source folder) nor `format` (an app gallery folder)'] }
-  const name = layout === 'csw' && typeof man.id === 'string' ? man.id : slug
+  if (!('csw' in man)) return { name: slug, problems: ['manifest.json has no `csw` key (not a .csw source folder)'] }
+  const name = typeof man.id === 'string' ? man.id : slug
 
-  if (layout === 'csw') {
-    if (man.csw !== FORMAT) bad(`manifest csw is ${JSON.stringify(man.csw)}, this checker reads format ${FORMAT}`)
-    if (typeof man.id !== 'string' || !validId(man.id)) bad(`id ${JSON.stringify(man.id)} is not a valid widget id`)
-    else if (man.id !== slug) bad(`folder name "${slug}" is not the widget id "${man.id}"`)
-    if (typeof man.version !== 'string' || !validVersion(man.version)) bad(`version ${JSON.stringify(man.version)} must be MAJOR.MINOR.PATCH`)
-    if (!Number.isInteger(man.api) || (man.api as number) < 1 || (man.api as number) > API_LEVEL) bad(`api ${JSON.stringify(man.api)} must be 1 to ${API_LEVEL}`)
-  } else if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(slug) || slug.length > 48) bad('folder name is not a valid slug')
+  if (man.csw !== FORMAT) bad(`manifest csw is ${JSON.stringify(man.csw)}, this checker reads format ${FORMAT}`)
+  if (typeof man.id !== 'string' || !validId(man.id)) bad(`id ${JSON.stringify(man.id)} is not a valid widget id`)
+  else if (man.id !== slug) bad(`folder name "${slug}" is not the widget id "${man.id}"`)
+  if (typeof man.version !== 'string' || !validVersion(man.version)) bad(`version ${JSON.stringify(man.version)} must be MAJOR.MINOR.PATCH`)
+  if (!Number.isInteger(man.api) || (man.api as number) < 1 || (man.api as number) > API_LEVEL) bad(`api ${JSON.stringify(man.api)} must be 1 to ${API_LEVEL}`)
 
   const html = text('widget.html')
   if (html === undefined) bad('widget.html is missing')

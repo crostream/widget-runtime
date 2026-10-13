@@ -101,7 +101,7 @@ export interface InitMsg {
   theme: ResolvedTheme
   mode: Mode
   baseUrl: string
-  // The widget's kind ('widget-…' or 'gallery-…'), the first part of its
+  // The widget's kind ('widget-…' or a gallery package id), the first part of its
   // assets' URLs (sl.asset).
   kind?: string
   fonts: FontFaceData[]

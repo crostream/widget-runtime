@@ -3,7 +3,7 @@
 //
 //   crostream-widget check <dir…>
 //
-// Each dir is a widget folder or a folder of widget folders, in either
+// Each dir is a widget folder or a folder of widget folders, in the csw
 // source layout (see the package's README). Prints `ok <name>` or
 // `FAIL <name>: reason` per widget and exits 1 if any failed.
 import { existsSync } from 'node:fs'
@@ -13,7 +13,7 @@ const [cmd, ...args] = process.argv.slice(2)
 
 function usage(code) {
   const out = code ? console.error : console.log
-  out('usage: crostream-widget check <dir…>\n\nEach dir is a widget folder (manifest.json, widget.html/css/js) or a folder of them.')
+  out('usage: crostream-widget check <dir…>\n\nEach dir is a widget folder (a csw source folder: manifest.json, widget.html/css/js) or a folder of them.')
   process.exit(code)
 }
 

@@ -143,22 +143,28 @@ is used.
 npx crostream-widget check <dir…>
 ```
 
-Each argument is a widget folder or a folder of widget folders. Both source
-layouts are read, told apart by the manifest's keys:
+Each argument is a widget folder or a folder of widget folders, in the csw
+source layout (`widgets/<id>/`): `manifest.json` with `csw`, `id`, `version`
+(semver), `api`, and `widget.html`, `widget.css`, `widget.js`, `assets/`.
 
-- **csw source folders** (`widgets/<id>/`): `manifest.json` with `csw`, `id`,
-  `version` (semver), `api`, and `widget.html`, `widget.css`, `widget.js`,
-  `assets/`.
-- **app gallery folders** (`gallery/<slug>/`): `manifest.json` with `format` and
-  an integer `version`, and the same code files.
-
-For every widget it checks: the identity (name, an icon from `WIDGET_ICONS`;
-for csw the id, version, API level and that the folder is named after the id),
+For every widget it checks: the identity (name, an icon from `WIDGET_ICONS`,
+the id, version, API level and that the folder is named after the id),
 the template (with the runtime's compiler and the editor's checker) and the
 script (type-checked against `WIDGET_DTS` plus the widget's own fields and
 data, then the API's own checks such as unknown `sl.on` events and undeclared
 `sl.data['…']` keys; `sl.fields` is typed by each field's kind, as in the app's editor). It prints `ok <name>` or `FAIL <name>: reason` and exits 1
 if any widget failed.
+
+## Unreleased
+
+- `BUILTIN_THEME_PROPS` lists only the app's nine built-in widget kinds
+  (text, rect, frame, line, image, video, audio, alert, chat; image, video
+  and audio have no themed props). The 18 classic kinds moved to the widget
+  gallery as csw packages and are gone from the app.
+- `crostream-widget check` reads csw source folders only. The app's old
+  gallery folder layout (`format` and an integer `version`) is no longer
+  accepted, and `layoutOf` and the `Layout` type are removed from
+  `./tooling/check`.
 
 ## Versioning
 
