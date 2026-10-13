@@ -32,18 +32,6 @@ export const framePage = (code) =>
   '<!doctype html><html><head><meta charset="utf-8"><title>widget</title></head><body>' +
   `<script>${code.replace(/<\/(script)/gi, '<\\/$1').replace(/<!--/g, '<\\!--')}</script></body></html>`
 
-// RUNTIME_FILE is the runtime script framePageExternal loads, served next to it.
-export const RUNTIME_FILE = 'widget-runtime.js'
-
-// framePageExternal is the same document loading the runtime from
-// RUNTIME_FILE beside it (still a classic script, so the opaque-origin frame
-// needs no CORS). For embedders that can serve both files and allow the
-// script in the frame's policy: the browser compiles it off the main thread
-// and keeps the compiled code across visits.
-export const framePageExternal = () =>
-  '<!doctype html><html><head><meta charset="utf-8"><title>widget</title></head><body>' +
-  `<script src="${RUNTIME_FILE}"></script></body></html>`
-
 
 // bundleFrame builds the widget runtime (src/frame) as one self-contained
 // IIFE: Svelte, the blocks and their CSS (injected into the shadow roots they

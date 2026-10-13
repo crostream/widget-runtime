@@ -30,7 +30,6 @@ without it.
 | `./tooling/check` | The widget folder checks behind the CLI (Node): `checkFolder`, `checkPaths`, `typeCheck`, `checkScript`. |
 | `./render` | The renderer: `FrameBox`, `StyledText`, `Glyph` (Svelte 5) and the pure functions behind them (`normEffects`, `planEffects`, `normFrame`, `fullTheme`, `resolveProps`, ...), shipped as preprocessed Svelte with types. |
 | `./widget-frame.html` | The frame page: the runtime inlined in one HTML file. |
-| `./widget-frame-external.html`, `./widget-runtime.js` | The same frame with the runtime as a file beside it (see below). |
 | `./contract.json` | The constants an embedding app must agree on, generated from `protocol.ts`. |
 
 ## Running a widget in a page
@@ -67,15 +66,11 @@ your page's strict policy and never run. Serve:
 - `FRAME_PATH` (`/widget-frame.html`): the file `dist/widget-frame.html` of this
   package, from the same origin as the page that embeds it. It is loaded as
   `FRAME_PATH#<nonce>` inside `<iframe sandbox="allow-scripts">`; the host
-  does that for you.
-
-  Pages showing many widgets can serve `dist/widget-frame-external.html`
-  instead, with `dist/widget-runtime.js` beside it (same directory, any path;
-  pass that page's URL as `frameUrl`). The browser then compiles the runtime
-  off the main thread and keeps the compiled code across visits. Serve both
-  under a versioned path with long-lived caching, and if you send a CSP for
-  the frame, allow that script (`script-src <origin>/<dir>/widget-runtime.js`;
-  the frame's own policy is added after it runs).
+  does that for you. The runtime is inline on purpose: each sandboxed frame
+  has its own opaque origin, so browsers would fetch a separate script once
+  per frame and never cache it, while the page itself is cached like any
+  navigation. Serve it with long-lived caching under a versioned path if you
+  can.
 - `ASSET_PREFIX` (`/widget-assets/`): a widget's own assets, as
   `/widget-assets/<kind>/<path>` (what `sl.asset(path)` resolves to; `kind` is
   `mount`'s option, `gallery-<id>` by default).

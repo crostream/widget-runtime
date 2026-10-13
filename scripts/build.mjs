@@ -3,9 +3,7 @@
 //   tsc          protocol, format, api, tooling and the host's types (JS and
 //                .d.ts, one file per module)
 //   svelte-package  ./render: the renderer as preprocessed Svelte + .d.ts
-//   vite         dist/widget-frame.html (the runtime, inline),
-//                dist/widget-frame-external.html + dist/widget-runtime.js
-//                (the same runtime as a file beside the page) and
+//   vite         dist/widget-frame.html (the runtime, inline) and
 //                dist/host.js (the host as one ES module)
 //   contract.json   the constants an embedding app must agree on, read from
 //                the built protocol
@@ -13,7 +11,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { bundle, bundleFrame, framePage, framePageExternal, RUNTIME_FILE } from './bundle.mjs'
+import { bundle, bundleFrame, framePage } from './bundle.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist')
@@ -40,8 +38,6 @@ run(bin('svelte-package'), ['-i', 'src/render', '-o', 'dist/render', '-t', 'tsco
 
 const frame = await bundleFrame()
 writeFileSync(join(dist, 'widget-frame.html'), framePage(frame))
-writeFileSync(join(dist, 'widget-frame-external.html'), framePageExternal())
-writeFileSync(join(dist, RUNTIME_FILE), frame)
 const host = await bundle('src/host/index.ts', { formats: ['es'], fileName: () => 'host.js' }, [])
 writeFileSync(join(dist, 'host.js'), host)
 
