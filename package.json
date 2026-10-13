@@ -1,6 +1,6 @@
 {
   "name": "@crostream/widget-runtime",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The CroStream widget runtime: the sandboxed frame, the host library, the renderer, the sl API model and the checks for .csw widgets.",
   "license": "Apache-2.0",
   "type": "module",
