@@ -64,10 +64,8 @@ export const noEffects = (): TextEffects => ({
 // ---- Frames, lines and themes (Go: internal/overlay/frame.go) ----
 //
 // A FrameStyle styles a box (prop kind 'frame'): the Frame widget's `frame`,
-// and box/row styles on other widgets — chat `frame` + `rowFrame`, events
-// `frame` + `rowFrame`, alert `frame`, goal `trackFrame` + `barFrame`, latest
-// and counter `frame` (a plate behind the text). One component (FrameBox)
-// draws them all. The zero frame draws nothing.
+// and box/row styles on other widgets — chat `frame` + `rowFrame` and alert
+// `frame`. One component (FrameBox) draws them all. The zero frame draws nothing.
 //
 // Colors anywhere in props (plain color props, effects, frames) may be
 // "#rrggbb", "#rrggbbaa" or a theme reference "theme:<key>"; fonts may be

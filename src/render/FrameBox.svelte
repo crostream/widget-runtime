@@ -2,11 +2,10 @@
   // FrameBox draws a FrameStyle (types.ts) filling its box, with optional
   // content on top inset by the frame's padding (and by the room a bubble's
   // pointer, a tab or pointed ends take). Every frame of every widget goes
-  // through it: the Frame widget, chat and event boxes and rows, alert
-  // panels, goal bars and the plates behind latest/counter texts.
+  // through it: the Frame widget, chat boxes and rows and alert panels.
   //
   // layout 'fill' takes its parent's size (100% × 100%), 'wrap' is a block
-  // as tall as its content (chat and event rows). The frame is drawn at
+  // as tall as its content (chat rows). The frame is drawn at
   // w × h canvas pixels when given, else at the measured size.
   //
   // One SVG per frame, bottom first: outer shadows (and a glow without a
