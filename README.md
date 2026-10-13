@@ -153,9 +153,8 @@ for csw the id, version, API level and that the folder is named after the id),
 the template (with the runtime's compiler and the editor's checker) and the
 script (type-checked against `WIDGET_DTS` plus the widget's own fields and
 data, then the API's own checks such as unknown `sl.on` events and undeclared
-`sl.data['…']` keys). It prints `ok <name>` or `FAIL <name>: reason` and exits 1
-if any widget failed. `--typed-fields` types `sl.fields` by each field's kind,
-as the app's editor does; it is stricter than the default.
+`sl.data['…']` keys; `sl.fields` is typed by each field's kind, as in the app's editor). It prints `ok <name>` or `FAIL <name>: reason` and exits 1
+if any widget failed.
 
 ## Versioning
 

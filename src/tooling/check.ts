@@ -123,17 +123,9 @@ export interface FolderResult {
   problems: string[]
 }
 
-export interface CheckOptions {
-  // typedFields types sl.fields by each field's kind, as the editor does. Off
-  // by default: the app's own gallery check never typed them (its manifests
-  // say `kind`, the check read `type`), and the built-in widgets' scripts
-  // are not clean under the stricter typing yet.
-  typedFields?: boolean
-}
-
 // checkFolder runs every check on one widget folder. The problems are one
 // line each; an empty list is a clean widget.
-export function checkFolder(dir: string, opts: CheckOptions = {}): FolderResult {
+export function checkFolder(dir: string): FolderResult {
   const slug = basename(resolve(dir))
   const problems: string[] = []
   const bad = (msg: string) => problems.push(msg.replace(/\n\s*/g, ' | '))
@@ -163,7 +155,7 @@ export function checkFolder(dir: string, opts: CheckOptions = {}): FolderResult 
   else if (!WIDGET_ICONS.includes(man.icon)) bad(`icon "${man.icon}" is not a UI icon name (WIDGET_ICONS)`)
 
   const ctx: WidgetContext = {
-    fields: (man.fields ?? []).map((f) => ({ key: f.key, label: f.label, type: opts.typedFields ? f.kind ?? f.type : f.type })),
+    fields: (man.fields ?? []).map((f) => ({ key: f.key, label: f.label, type: f.kind ?? f.type })),
     data: (man.data ?? []).map((key) => ({ key, sample: man.sample?.[key] })),
   }
   if (html !== undefined) {
@@ -185,6 +177,6 @@ export function checkFolder(dir: string, opts: CheckOptions = {}): FolderResult 
 
 // checkPaths checks every widget folder the arguments name (a widget folder,
 // or a folder of them) and returns one result per folder.
-export function checkPaths(args: string[], opts: CheckOptions = {}): FolderResult[] {
-  return args.flatMap(widgetFolders).map((d) => checkFolder(d, opts))
+export function checkPaths(args: string[]): FolderResult[] {
+  return args.flatMap(widgetFolders).map(checkFolder)
 }

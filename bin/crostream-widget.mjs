@@ -1,22 +1,19 @@
 #!/usr/bin/env node
 // crostream-widget: command line checks for CroStream widget sources.
 //
-//   crostream-widget check [--typed-fields] <dir…>
+//   crostream-widget check <dir…>
 //
 // Each dir is a widget folder or a folder of widget folders, in either
 // source layout (see the package's README). Prints `ok <name>` or
-// `FAIL <name>: reason` per widget and exits 1 if any failed. --typed-fields
-// types sl.fields by field kind, as the app's editor does (stricter).
+// `FAIL <name>: reason` per widget and exits 1 if any failed.
 import { existsSync } from 'node:fs'
 import { checkPaths } from '../dist/tooling/check.js'
 
-const [cmd, ...rest] = process.argv.slice(2)
-const typedFields = rest.includes('--typed-fields')
-const args = rest.filter((a) => a !== '--typed-fields')
+const [cmd, ...args] = process.argv.slice(2)
 
 function usage(code) {
   const out = code ? console.error : console.log
-  out('usage: crostream-widget check [--typed-fields] <dir…>\n\nEach dir is a widget folder (manifest.json, widget.html/css/js) or a folder of them.')
+  out('usage: crostream-widget check <dir…>\n\nEach dir is a widget folder (manifest.json, widget.html/css/js) or a folder of them.')
   process.exit(code)
 }
 
@@ -31,7 +28,7 @@ for (const arg of args) {
     failed++
     continue
   }
-  const results = checkPaths([arg], { typedFields })
+  const results = checkPaths([arg])
   if (results.length === 0) {
     console.error(`FAIL ${arg}: no widget folders (a folder with a manifest.json) found`)
     failed++
