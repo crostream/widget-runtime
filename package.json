@@ -67,6 +67,8 @@
       "default": "./dist/render/index.js"
     },
     "./widget-frame.html": "./dist/widget-frame.html",
+    "./widget-frame-external.html": "./dist/widget-frame-external.html",
+    "./widget-runtime.js": "./dist/widget-runtime.js",
     "./contract.json": "./dist/contract.json",
     "./package.json": "./package.json"
   },

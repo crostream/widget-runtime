@@ -66,3 +66,18 @@ describe('dist/widget-frame.html', () => {
     expect(html).toContain('Content-Security-Policy')
   })
 })
+
+describe('dist/widget-frame-external.html', () => {
+  const html = read('widget-frame-external.html')
+  it('loads widget-runtime.js beside it as one classic script', () => {
+    expect(html.match(/<script/g)).toHaveLength(1)
+    expect(html).toContain('<script src="widget-runtime.js"></script>')
+    expect(html).not.toContain('type="module"')
+  })
+  it('runs exactly the runtime the inline frame inlines', () => {
+    const inline = read('widget-frame.html')
+    const body = inline.slice(inline.indexOf('<script>') + 8, inline.lastIndexOf('</script>'))
+    const js = read('widget-runtime.js')
+    expect(body).toBe(js.replace(/<\/(script)/gi, '<\\/$1').replace(/<!--/g, '<\\!--'))
+  })
+})
