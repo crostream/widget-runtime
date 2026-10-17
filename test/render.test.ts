@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { normEffects, planEffects, typeSeconds, splitLetters } from '../src/render/effects.js'
 import { frameDraws, normFrame, geometry, frameColor } from '../src/render/frame.js'
 import { fullTheme, resolveProps, resolveRefs, schemaOfFields, themeValue } from '../src/render/themecore.js'
-import { DEFAULT_THEME, noEffects, noFrame } from '../src/render/types.js'
+import { DEFAULT_THEME, mediaFileUrl, mediaThumbUrl, noEffects, noFrame, setMediaUrls } from '../src/render/types.js'
 import { iconColor, isIconKind } from '../src/render/icons.js'
 
 describe('effects', () => {
@@ -102,5 +102,16 @@ describe('icons', () => {
     expect(isIconKind('twitch')).toBe(true)
     expect(isIconKind('nope')).toBe(false)
     expect(iconColor('heart', '#fff')).toBe('#fff')
+  })
+})
+
+describe('media urls', () => {
+  it('default to the app routes, follow a host, and reset', () => {
+    expect(mediaFileUrl('a b')).toBe('/media/file/a%20b')
+    setMediaUrls({ file: (id) => `https://cdn.example/${id}.png` })
+    expect(mediaFileUrl('x')).toBe('https://cdn.example/x.png')
+    expect(mediaThumbUrl('x')).toBe('/media/thumb/x') // untouched
+    setMediaUrls(null)
+    expect(mediaFileUrl('x')).toBe('/media/file/x')
   })
 })

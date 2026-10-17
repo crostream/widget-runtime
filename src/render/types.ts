@@ -16,8 +16,23 @@ export interface Cue {
   at: number
 }
 
-export const mediaFileUrl = (id: string) => `/media/file/${encodeURIComponent(id)}`
-export const mediaThumbUrl = (id: string) => `/media/thumb/${encodeURIComponent(id)}`
+// Media URLs default to the CroStream app's routes. A host that serves media
+// elsewhere (a docs page, a demo with generated art) installs its own
+// resolvers with setMediaUrls before the first render; null restores the
+// defaults.
+type UrlOf = (id: string) => string
+const defaultFileUrl: UrlOf = (id) => `/media/file/${encodeURIComponent(id)}`
+const defaultThumbUrl: UrlOf = (id) => `/media/thumb/${encodeURIComponent(id)}`
+let fileUrl = defaultFileUrl
+let thumbUrl = defaultThumbUrl
+
+export const mediaFileUrl = (id: string) => fileUrl(id)
+export const mediaThumbUrl = (id: string) => thumbUrl(id)
+
+export function setMediaUrls(urls: { file?: UrlOf | null; thumb?: UrlOf | null } | null): void {
+  fileUrl = urls?.file ?? defaultFileUrl
+  thumbUrl = urls?.thumb ?? defaultThumbUrl
+}
 
 export type FillKind = 'solid' | 'linear' | 'radial' | 'media'
 export type DecorationLine = 'none' | 'underline' | 'line-through' | 'overline'
